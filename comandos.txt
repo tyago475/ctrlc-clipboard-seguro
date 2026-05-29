@@ -1,0 +1,42 @@
+================================================================
+ CTRL+C — Como correr o programa
+================================================================
+
+# 1. Ativar o ambiente virtual (sempre que abrires um terminal novo)
+source .venv/bin/activate
+
+
+# 2. Correr a aplicacao
+# ---------------------
+
+# Demonstracao do ataque (nao precisa de clipboard)
+python3 attack.py
+
+# CLI — versao simples (chave so em memoria, perde-se ao sair)
+python3 app.py --user teste
+
+# CLI — versao com password mestra (persistente)
+python3 app.py --user teste --master
+
+# Interface grafica — versao simples
+python3 gui.py --user teste
+
+# Interface grafica — versao com password mestra
+python3 gui.py --user teste --master
+
+
+# 3. Comandos dentro da CLI (prompt "ctrl+c>")
+# --------------------------------------------
+
+list             lista as entradas
+get <i>          decifra e copia a entrada <i> para o clipboard
+check <texto>    verifica se <texto> esteve no historico (via hash)
+verify           valida a assinatura digital
+flush            grava o historico cifrado agora
+help             mostra ajuda
+quit             termina
+
+
+# 4. Por texto no clipboard pelo terminal (para testar)
+# ------------------------------------------------------
+echo -n "texto a copiar" | xclip -selection clipboard
