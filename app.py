@@ -177,8 +177,11 @@ if __name__ == "__main__":
         sp = f"hist_{a.user}/master.salt"; os.makedirs(f"hist_{a.user}", exist_ok=True)
         salt = open(sp,"rb").read() if os.path.exists(sp) else os.urandom(16)
         if not os.path.exists(sp): open(sp,"wb").write(salt)
-        key = derive_key(getpass.getpass("password mestra: "), salt)
-        mgr = ClipManager(a.user, key, persist=True)
+        try:
+            key = derive_key(getpass.getpass("password mestra: "), salt)
+            mgr = ClipManager(a.user, key, persist=True)
+        except ValueError:
+            print("password incorreta — nao foi possivel decifrar a chave."); exit(1)
     else:
         mgr = ClipManager(a.user, random_key(), persist=False)
     mgr.start(); repl(mgr)
