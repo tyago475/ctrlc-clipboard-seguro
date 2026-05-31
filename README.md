@@ -26,6 +26,10 @@ Sem `pyperclip` a app corre em modo *mock* (útil para testes).
 ## Uso
 
 ```bash
+# Criar e iniciar Virtual Environment (.venv)
+python3 -m venv .venv
+source .venv/bin/activate
+
 # Versão simples — chave de cifra só em memória (histórico perde-se ao sair)
 python3 app.py --user alice
 python3 gui.py --user alice
