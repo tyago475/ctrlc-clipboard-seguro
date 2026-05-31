@@ -20,7 +20,7 @@ from cryptography.hazmat.primitives.asymmetric import rsa, padding
 
 PBKDF2_ITERS = 600_000
 KEY_LEN = 32          # AES-256
-SAVE_INTERVAL = 15   # 15 segundos (requisito)
+SAVE_INTERVAL = 6   # 5 minutos (requisito)
 POLL_INTERVAL = 2     # simula CTRL+V a cada 2s
 
 
@@ -134,3 +134,4 @@ def verify_signature(enc_file: str, sig_file: str, pub_key: rsa.RSAPublicKey) ->
 def gen_rsa_keypair():
     priv = rsa.generate_private_key(public_exponent=65537, key_size=2048)
     return priv, priv.public_key()
+
