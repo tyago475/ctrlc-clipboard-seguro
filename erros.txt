@@ -1,5 +1,0 @@
--  o histórico deve ser salvo no disco (cifrado) a cada 5 minutos (apagando o anterior);
--  aplicação principal deve permitir ver as várias entradas no Clipboard e também escolher qual deve ir para lá através de duplo clique.
-Note que a versão mais simples da aplicação, o histórico é perdido sempre que esta é
-terminada (porque a chave de cifra que permite decifrar o ficheiro está apenas guardada
-em memória).
