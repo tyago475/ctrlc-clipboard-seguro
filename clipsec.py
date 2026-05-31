@@ -20,7 +20,7 @@ from cryptography.hazmat.primitives.asymmetric import rsa, padding
 
 PBKDF2_ITERS = 600_000
 KEY_LEN = 32          # AES-256
-SAVE_INTERVAL = 6   # 5 minutos (requisito)
+SAVE_INTERVAL = 300   # 5 minutos (requisito)
 POLL_INTERVAL = 2     # simula CTRL+V a cada 2s
 
 
