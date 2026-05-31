@@ -4,11 +4,8 @@
 
 # 1. Ativar o ambiente virtual (sempre que abrires um terminal novo)
 
-python3 -m venv .venv
-
+run './requirements.sh'
 source .venv/bin/activate
-
-pip install cryptography pyperclip
 
 
 # 2. Correr a aplicacao

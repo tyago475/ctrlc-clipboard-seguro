@@ -15,19 +15,13 @@ digitais e suporte a certificados X.509.
 | `T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_gui.py`     | Interface Tkinter; **duplo-clique** repõe a entrada no clipboard.                  |
 | `T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_attack.py`  | Demonstração de uma falha da implementação + mitigação (para a apresentação).      |
 
-## Instalação
-
-```bash
-pip install cryptography pyperclip   # pyperclip só é preciso para clipboard real
-```
-
 Sem `pyperclip` a app corre em modo _mock_ (útil para testes).
 
 ## Uso
 
 ```bash
 # Criar e iniciar Virtual Environment (.venv)
-python3 -m venv .venv
+run './requirements.sh'
 source .venv/bin/activate
 
 # Versão simples — chave de cifra só em memória (histórico perde-se ao sair)
