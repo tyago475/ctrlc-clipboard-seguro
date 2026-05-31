@@ -6,14 +6,21 @@ digitais e suporte a certificados X.509.
 
 ## Ficheiros
 
-| Ficheiro     | Papel |
-|--------------|-------|
-| `clipsec.py` | Núcleo cripto: AES-256-GCM por entrada, SHA-256, assinatura RSA-PSS, PBKDF2. |
-| `pki.py`     | Certificados X.509 (CA + cert de assinatura) e proteção da chave privada em disco. |
-| `config.py`  | Gestão e ferramenta de configuração (max_entries, intervalos, etc.). |
-| `app.py`     | Daemon de captura (thread, "CTRL+V" a cada 2 s; autosave 5 min) + CLI. |
-| `gui.py`     | Interface Tkinter; **duplo-clique** repõe a entrada no clipboard. |
-| `attack.py`  | Demonstração de uma falha da implementação + mitigação (para a apresentação). |
++---------------------------------------------------------------------------------------------------+
+| Ficheiro     |   Papel                                                                            |
+|--------------+------------------------------------------------------------------------------------|
+| clipsec.py | Núcleo cripto: AES-256-GCM por entrada, SHA-256, assinatura RSA-PSS, PBKDF2.         |
++--------------+------------------------------------------------------------------------------------+
+| pki.py     | Certificados X.509 (CA + cert de assinatura) e proteção da chave privada em disco.   |
++--------------+------------------------------------------------------------------------------------+
+| config.py  | Gestão e ferramenta de configuração (max_entries, intervalos, etc.).                 |
++--------------+------------------------------------------------------------------------------------+
+| app.py     | Daemon de captura (thread, "CTRL+V" a cada 2 s; autosave 5 min) + CLI.               |
++--------------+------------------------------------------------------------------------------------+
+| gui.py     | Interface Tkinter; duplo-clique repõe a entrada no clipboard.                        |
++--------------+------------------------------------------------------------------------------------+
+| attack.py  | Demonstração de uma falha da implementação + mitigação (para a apresentação).        |
++---------------------------------------------------------------------------------------------------+
 
 ## Instalação
 

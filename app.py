@@ -42,6 +42,7 @@ class ClipManager:
         self._stop = threading.Event()
         self._lock = threading.Lock()
         self._setup_pki()
+        clip_set("") # limpa o clipboard no arranque (opcional)
 
     def _setup_pki(self):
         """Carrega/gera CA, certificado de assinatura e chave privada protegida."""

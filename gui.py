@@ -13,7 +13,8 @@ Uso:
 import argparse, os, getpass, time
 import tkinter as tk
 from tkinter import messagebox, simpledialog, font as tkfont
-from app import ClipManager, clip_set, CLIP_REAL
+from tkinter import scrolledtext  # Suporte para caixa de texto com scroll
+from app import ClipManager, clip_set, CLIP_REAL, HELP
 from clipsec import random_key, derive_key
 
 # --- paleta (estetica de ferramenta de seguranca) ---
@@ -103,6 +104,7 @@ class ClipGUI:
         self._btn(bar, "\u2713 Verificar assinatura", self.verify, ACCENT)
         self._btn(bar, "\u2913 Gravar agora", self.flush, ACCENT2)
         self._btn(bar, "\u2315 Procurar (hash)", self.search, AMBER)
+        self._btn(bar, "\u2139 Ajuda", self.show_help, MUTED)
 
     def _build_status(self):
         self.status = tk.Label(self.root, text="pronto.", font=self.small, bg=BG,
@@ -161,6 +163,39 @@ class ClipGUI:
         found = self.mgr.hist.contains(q)
         if found: self.set_status(f"'{q}' EXISTE no historico (confirmado via hash).", ACCENT)
         else:     self.set_status(f"'{q}' nao encontrado.", MUTED)
+
+    def show_help(self):
+        """Abre uma janela secundaria dedicada com o texto de ajuda sem cortar."""
+        help_win = tk.Toplevel(self.root)
+        help_win.title("Ajuda — CTRL+C")
+        help_win.geometry("640x460")
+        help_win.configure(bg=BG)
+        help_win.transient(self.root)  # Garante foco sobre a janela principal
+        help_win.minsize(520, 360)
+
+        # Titulo interno
+        tk.Label(help_win, text="\u2139 INSTRUÇÕES E SEGURANÇA", font=self.mono_b, 
+                 bg=BG, fg=ACCENT, anchor="w").pack(fill="x", padx=16, pady=(16, 8))
+
+        # Contentor de texto com quebra automatica e scrollbar
+        txt_area = scrolledtext.ScrolledText(
+            help_win, font=self.mono, bg=PANEL, fg=FG, bd=0, 
+            highlightthickness=1, highlightbackground=BORDER,
+            wrap=tk.WORD, padx=12, pady=12
+        )
+        txt_area.pack(fill="both", expand=True, padx=16, pady=(0, 14))
+
+        # Insercao estatica do HELP do app.py
+        txt_area.insert(tk.END, HELP)
+        txt_area.config(state=tk.DISABLED)
+
+        # Botao estilizado para fechar
+        btn_close = tk.Label(help_win, text="Fechar", font=self.mono_b, bg=PANEL, fg=RED,
+                             padx=22, pady=7, cursor="hand2")
+        btn_close.pack(pady=(0, 16))
+        btn_close.bind("<Button-1>", lambda e: help_win.destroy())
+        btn_close.bind("<Enter>", lambda e: btn_close.config(bg=BORDER))
+        btn_close.bind("<Leave>", lambda e: btn_close.config(bg=PANEL))
 
     def on_close(self):
         self.mgr.stop(); self.root.destroy()
