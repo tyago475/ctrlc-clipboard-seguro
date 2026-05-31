@@ -14,8 +14,8 @@ import argparse, os, getpass, time
 import tkinter as tk
 from tkinter import messagebox, simpledialog, font as tkfont
 from tkinter import scrolledtext  # Suporte para caixa de texto com scroll
-from app import ClipManager, clip_set, CLIP_REAL, HELP
-from clipsec import random_key, derive_key
+from T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_app import ClipManager, clip_set, CLIP_REAL, HELP
+from T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_clipsec import random_key, derive_key
 
 # --- paleta (estetica de ferramenta de seguranca) ---
 BG      = "#0d1117"
@@ -31,6 +31,7 @@ SELBG   = "#1f6feb"
 
 
 class ClipGUI:
+# --- interface grafica Tkinter para o gestor CTRL+C ---
     def __init__(self, mgr: ClipManager):
         self.mgr = mgr
         self.root = tk.Tk()
@@ -53,6 +54,7 @@ class ClipGUI:
         self.refresh()
         self.root.protocol("WM_DELETE_WINDOW", self.on_close)
 
+# --- construcao da interface ---
     def _build_header(self):
         head = tk.Frame(self.root, bg=BG)
         head.pack(fill="x", padx=16, pady=(14, 6))
@@ -65,6 +67,7 @@ class ClipGUI:
                  text="AES-256-GCM \u00b7 SHA-256 \u00b7 RSA-PSS \u00b7 X.509   \u2014   duplo-clique repoe a entrada no clipboard",
                  font=self.small, bg=BG, fg=MUTED).pack(fill="x", padx=16, anchor="w")
 
+# --- lista de entradas no histórico (com scrollbar) ---
     def _build_list(self):
         wrap = tk.Frame(self.root, bg=BORDER, bd=0)
         wrap.pack(fill="both", expand=True, padx=16, pady=(10, 8))
@@ -83,12 +86,14 @@ class ClipGUI:
         self.listbox.bind("<Double-Button-1>", self.on_double_click)
         self.listbox.bind("<<ListboxSelect>>", self.on_select)
 
+# --- Painel com detalhes da entrada selecionada e informacoes do historico ---
     def _build_detail(self):
         self.detail = tk.Label(
             self.root, text="Seleciona uma entrada para ver o hash; duplo-clique decifra.",
             font=self.small, bg=PANEL, fg=MUTED, anchor="w", justify="left", padx=10, pady=6)
         self.detail.pack(fill="x", padx=16)
 
+# --- barra de botoes ---
     def _btn(self, parent, text, cmd, color):
         b = tk.Label(parent, text=text, font=self.mono_b, bg=PANEL, fg=color,
                      padx=14, pady=8, cursor="hand2")
@@ -98,6 +103,7 @@ class ClipGUI:
         b.bind("<Leave>", lambda e: b.config(bg=PANEL))
         return b
 
+# --- construcao da barra de botoes com a funcao de cada um ---
     def _build_bar(self):
         bar = tk.Frame(self.root, bg=BG)
         bar.pack(fill="x", padx=16, pady=10)
@@ -106,14 +112,17 @@ class ClipGUI:
         self._btn(bar, "\u2315 Procurar (hash)", self.search, AMBER)
         self._btn(bar, "\u2139 Ajuda", self.show_help, MUTED)
 
+# --- barra de status para mensagens de feedback ao usuario ---
     def _build_status(self):
         self.status = tk.Label(self.root, text="pronto.", font=self.small, bg=BG,
                                 fg=MUTED, anchor="w", padx=16)
         self.status.pack(fill="x", pady=(0, 10))
 
+# --- funcoes de callback dos botoes e eventos da interface ---
     def set_status(self, msg, color=MUTED):
         self.status.config(text=msg, fg=color)
 
+# --- atualiza a lista de entradas do historico a cada 2 segundos ---
     def refresh(self):
         sel = self.listbox.curselection()
         self.listbox.delete(0, tk.END)
@@ -129,12 +138,14 @@ class ClipGUI:
                  f"poll={self.mgr.cfg.get('poll_interval')}s \u00b7 save={self.mgr.cfg.get('save_interval')}s")
         self.root.after(2000, self.refresh)
 
+# --- quando o usuario seleciona uma entrada, mostra o hash e o indice dela ---
     def on_select(self, _):
         sel = self.listbox.curselection()
         if not sel: return
         e = self.mgr.hist.entries[sel[0]]
         self.detail.config(text=f"entrada {sel[0]} \u00b7 sha256={e.sha256}", fg=FG)
 
+# --- quando o usuario duplo-clique numa entrada, tenta decifra-la e copia-la para o clipboard ---
     def on_double_click(self, _):
         sel = self.listbox.curselection()
         if not sel: return
@@ -146,6 +157,7 @@ class ClipGUI:
         except Exception as e:
             self.set_status(f"erro ao decifrar: {e}", RED)
 
+# --- verifica a assinatura do historico e da cadeia X.509 ---
     def verify(self):
         ok = self.mgr.verify()
         if ok:
@@ -153,10 +165,12 @@ class ClipGUI:
         else:
             self.set_status("assinatura INVALIDA ou ausente (faz 'Gravar agora' primeiro).", AMBER)
 
+# --- força a gravacao imediata do historico (cifrado e assinado) no disco ---
     def flush(self):
         self.mgr.flush()
         self.set_status("historico gravado (cifrado + assinado).", ACCENT2)
 
+# --- caixa de dialogo para o usuario inserir um hash a ser procurado no historico (busca via hash e não o texto-limpo) ---
     def search(self):
         q = simpledialog.askstring("Procurar", "Texto a procurar (via hash):", parent=self.root)
         if q is None: return
@@ -164,6 +178,7 @@ class ClipGUI:
         if found: self.set_status(f"'{q}' EXISTE no historico (confirmado via hash).", ACCENT)
         else:     self.set_status(f"'{q}' nao encontrado.", MUTED)
 
+# --- janela de ajuda dedicada com o texto de instrucoes e seguranca do app.py ---
     def show_help(self):
         """Abre uma janela secundaria dedicada com o texto de ajuda sem cortar."""
         help_win = tk.Toplevel(self.root)
@@ -173,11 +188,11 @@ class ClipGUI:
         help_win.transient(self.root)  # Garante foco sobre a janela principal
         help_win.minsize(520, 360)
 
-        # Titulo interno
+# --- Titulo interno ---
         tk.Label(help_win, text="\u2139 INSTRUÇÕES E SEGURANÇA", font=self.mono_b, 
                  bg=BG, fg=ACCENT, anchor="w").pack(fill="x", padx=16, pady=(16, 8))
 
-        # Contentor de texto com quebra automatica e scrollbar
+# --- Contentor de texto com quebra automatica e scrollbar ---
         txt_area = scrolledtext.ScrolledText(
             help_win, font=self.mono, bg=PANEL, fg=FG, bd=0, 
             highlightthickness=1, highlightbackground=BORDER,
@@ -185,11 +200,11 @@ class ClipGUI:
         )
         txt_area.pack(fill="both", expand=True, padx=16, pady=(0, 14))
 
-        # Insercao estatica do HELP do app.py
+# --- Insercao estatica do HELP do app.py ---
         txt_area.insert(tk.END, HELP)
         txt_area.config(state=tk.DISABLED)
 
-        # Botao estilizado para fechar
+# --- Botao estilizado para fechar --- 
         btn_close = tk.Label(help_win, text="Fechar", font=self.mono_b, bg=PANEL, fg=RED,
                              padx=22, pady=7, cursor="hand2")
         btn_close.pack(pady=(0, 16))
@@ -197,9 +212,11 @@ class ClipGUI:
         btn_close.bind("<Enter>", lambda e: btn_close.config(bg=BORDER))
         btn_close.bind("<Leave>", lambda e: btn_close.config(bg=PANEL))
 
+# --- quando a janela principal for fechada, para o gestor e fecha a janela ---
     def on_close(self):
         self.mgr.stop(); self.root.destroy()
 
+# --- inicia o loop principal da interface ---
     def run(self):
         self.root.mainloop()
 

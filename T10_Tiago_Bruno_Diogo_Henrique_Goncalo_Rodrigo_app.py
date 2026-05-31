@@ -11,9 +11,9 @@ Uso:
 Comandos: list | get <i> | check <txt> | verify | flush | config | help | quit
 """
 import argparse, threading, time, os, getpass
-from T10-Tiago-Bruno-Diogo-Henrique-Gonçalo-Rodrigo-clipsec import (History, random_key, derive_key, SAVE_INTERVAL, POLL_INTERVAL)
-from T10-Tiago-Bruno-Diogo-Henrique-Gonçalo-Rodrigo-config import Config
-import T10-Tiago-Bruno-Diogo-Henrique-Gonçalo-Rodrigo-pki
+from T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_clipsec import (History, random_key, derive_key, SAVE_INTERVAL, POLL_INTERVAL)
+from T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_config import Config
+import T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_pki as pki
 
 # --- Verifica se o pyperclip está disponível senão usa mock ---
 try:
@@ -144,6 +144,7 @@ Notas de seguranca:
 
 # --- É o ciclo que lê comandos do utilizador, executa-os ---
 def repl(mgr: ClipManager):
+    print("Se precisar de ajuda, escreva 'help'!")
     while True:
         try: cmd = input("ctrl+c> ").strip()
         except EOFError: break

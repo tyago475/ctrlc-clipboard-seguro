@@ -15,19 +15,19 @@ pip install cryptography pyperclip
 # ---------------------
 
 # Demonstracao do ataque (nao precisa de clipboard)
-python3 attack.py
+python3 T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_attack.py
 
 # CLI — versao simples (chave so em memoria, perde-se ao sair)
-python3 app.py --user teste
+python3 T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_app.py --user alice
 
 # CLI — versao com password mestra (persistente)
-python3 app.py --user teste --master
+python3 T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_app.py --user alice --master
 
 # Interface grafica — versao simples
-python3 gui.py --user teste
+python3 T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_gui.py --user alice
 
 # Interface grafica — versao com password mestra
-python3 gui.py --user teste --master
+python3 T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_gui.py --user alice --master
 
 
 # 3. Comandos dentro da CLI (prompt "ctrl+c>")

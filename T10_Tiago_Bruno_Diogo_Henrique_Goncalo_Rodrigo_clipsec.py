@@ -8,7 +8,7 @@ Hash  : SHA-256 por entrada (ficheiro à parte, texto limpo)
 Assin.: RSA-2048 PSS / SHA-256 sobre o ficheiro cifrado
 KDF   : PBKDF2-HMAC-SHA256 (versão elaborada, password mestra + sal)
 """
-from __future__ import annotationsa
+from __future__ import annotations
 import os, json, time, base64, hashlib, threading, hmac
 from dataclasses import dataclass, field, asdict
 from typing import Optional

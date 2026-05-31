@@ -8,12 +8,12 @@ digitais e suporte a certificados X.509.
 
 | Ficheiro     | Papel                                                                              |
 | ------------ | ---------------------------------------------------------------------------------- |
-| `clipsec.py` | Núcleo cripto: AES-256-GCM por entrada, SHA-256, assinatura RSA-PSS, PBKDF2.       |
-| `pki.py`     | Certificados X.509 (CA + cert de assinatura) e proteção da chave privada em disco. |
-| `config.py`  | Gestão e ferramenta de configuração (max_entries, intervalos, etc.).               |
-| `app.py`     | Daemon de captura (thread, "CTRL+V" a cada 2 s; autosave 5 min) + CLI.             |
-| `gui.py`     | Interface Tkinter; **duplo-clique** repõe a entrada no clipboard.                  |
-| `attack.py`  | Demonstração de uma falha da implementação + mitigação (para a apresentação).      |
+| `T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_clipsec.py` | Núcleo cripto: AES-256-GCM por entrada, SHA-256, assinatura RSA-PSS, PBKDF2.       |
+| `T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_pki.py`     | Certificados X.509 (CA + cert de assinatura) e proteção da chave privada em disco. |
+| `T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_config.py`  | Gestão e ferramenta de configuração (max_entries, intervalos, etc.).               |
+| `T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_app.py`     | Daemon de captura (thread, "CTRL+V" a cada 2 s; autosave 5 min) + CLI.             |
+| `T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_gui.py`     | Interface Tkinter; **duplo-clique** repõe a entrada no clipboard.                  |
+| `T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_attack.py`  | Demonstração de uma falha da implementação + mitigação (para a apresentação).      |
 
 ## Instalação
 
@@ -31,19 +31,19 @@ python3 -m venv .venv
 source .venv/bin/activate
 
 # Versão simples — chave de cifra só em memória (histórico perde-se ao sair)
-python3 app.py --user alice
-python3 gui.py --user alice
+python3 T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_app.py --user alice
+python3 T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_gui.py --user alice
 
 # Versão elaborada — chave derivada de password mestra (PBKDF2) + persistência
-python3 app.py --user alice --master
-python3 gui.py --user alice --master
+python3 T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_app.py --user alice --master
+python3 T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_gui.py --user alice --master
 
 # Configuração
-python3 config.py --user alice --set max_entries 200
-python3 config.py --user alice --list
+python3 T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_config.py --user alice --set max_entries 200
+python3 T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_config.py --user alice --list
 
 # Demonstração do ataque
-python3 attack.py
+python3 T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_attack.py
 ```
 
 Comandos da CLI: `list`, `get <i>`, `check <txt>`, `verify`, `flush`, `config`, `help`, `quit`.
@@ -66,9 +66,5 @@ Os hashes são SHA-256 **sem sal** do texto-limpo. Como o clipboard copia
 segredos de baixa entropia, um atacante com acesso ao ficheiro de hashes pode
 confirmar a presença de um segredo conhecido via ataque de dicionário, sem
 decifrar nada. Mitigação: HMAC-SHA256 com chave secreta mantida em memória
-(ver `attack.py`).
+(ver `T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_attack.py`).
 
-## Por fazer
-
-Apresentação (~10 slides) e artefactos de autoria (histórico Git com commits
-dos vários membros do grupo).
