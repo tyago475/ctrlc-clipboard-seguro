@@ -14,7 +14,7 @@ from cryptography.x509.oid import NameOID
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 
-
+# --- construção de certificados e chaves ---
 def _name(cn: str) -> x509.Name:
     return x509.Name([
         x509.NameAttribute(NameOID.COUNTRY_NAME, "PT"),
@@ -22,7 +22,7 @@ def _name(cn: str) -> x509.Name:
         x509.NameAttribute(NameOID.COMMON_NAME, cn),
     ])
 
-
+# --- construção de certificados e chaves ---
 def build_ca() -> tuple[rsa.RSAPrivateKey, x509.Certificate]:
     """CA auto-assinada que servirá de raiz de confiança."""
     key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
@@ -38,7 +38,7 @@ def build_ca() -> tuple[rsa.RSAPrivateKey, x509.Certificate]:
             .sign(key, hashes.SHA256()))
     return key, cert
 
-
+# --- construção de certificados e chaves ---
 def issue_signing_cert(ca_key, ca_cert, user: str):
     """Certificado de assinatura do utilizador, emitido pela CA."""
     key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
@@ -70,16 +70,13 @@ def save_private_key(key: rsa.RSAPrivateKey, path: str, enc_key: bytes):
     with open(path, "wb") as f:
         f.write(pem)
 
-
 def load_private_key(path: str, enc_key: bytes) -> rsa.RSAPrivateKey:
     with open(path, "rb") as f:
         return serialization.load_pem_private_key(f.read(), password=enc_key)
 
-
 def save_cert(cert: x509.Certificate, path: str):
     with open(path, "wb") as f:
         f.write(cert.public_bytes(serialization.Encoding.PEM))
-
 
 def load_cert(path: str) -> x509.Certificate:
     with open(path, "rb") as f:
@@ -100,7 +97,7 @@ def verify_cert_chain(leaf: x509.Certificate, ca: x509.Certificate) -> bool:
     except Exception:
         return False
 
-
+# --- verificação de assinatura com certificado e cadeia de confiança ---
 def verify_with_cert(blob: bytes, sig: bytes, leaf: x509.Certificate,
                      ca: x509.Certificate) -> bool:
     """Verifica assinatura E cadeia de confiança até à CA."""

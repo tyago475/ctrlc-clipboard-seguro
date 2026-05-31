@@ -16,20 +16,24 @@ DEFAULTS = {
 
 
 class Config:
+# --- Inicializa a configuração de um utilizador específico ---
     def __init__(self, user: str, base_dir: str = "."):
         self.path = os.path.join(base_dir, f"config_{user}.json")
         self.data = dict(DEFAULTS)
         self.load()
 
     def load(self):
+# --- Carrega a configuração do ficheiro JSON, se existir, sobrescrevendo os defaults ---
         if os.path.exists(self.path):
             with open(self.path) as f:
                 self.data.update(json.load(f))
 
     def save(self):
+# --- Salva a configuração atual num ficheiro JSON, criando ou sobrescrevendo o anterior ---
         with open(self.path, "w") as f:
             json.dump(self.data, f, indent=2)
-
+            
+# --- getters e setters com validação e coerção de tipos ---
     def get(self, k): return self.data.get(k, DEFAULTS.get(k))
 
     def set(self, k, v):

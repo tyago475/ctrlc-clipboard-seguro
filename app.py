@@ -6,7 +6,7 @@ chave privada em disco.
 
 Uso:
     python3 app.py --user alice                 # versao simples (chave em memoria)
-    python3 app.py --user alice --master         # versao elaborada (PBKDF2 + persistencia)
+    python3 app.py --user alice --master        # versao elaborada (PBKDF2 + persistencia)
 
 Comandos: list | get <i> | check <txt> | verify | flush | config | help | quit
 """
@@ -15,7 +15,7 @@ from clipsec import (History, random_key, derive_key, SAVE_INTERVAL, POLL_INTERV
 from config import Config
 import pki
 
-# --- abstracao de clipboard (pyperclip se existir; senao mock para testes) ---
+# --- Verifica se o pyperclip está disponível senão usa mock ---
 try:
     import pyperclip
     def clip_get(): return pyperclip.paste()
@@ -28,8 +28,9 @@ except ImportError:
     CLIP_REAL = False
 
 
+# --- Cérebro da app, coordena tudo: configuração, histórico, PKI, thread de captura ---
 class ClipManager:
-    """Reutilizavel pela CLI e pela GUI."""
+# --- Configurações de inicialização: username, chave de cifra, histórico persistente ou não ---
     def __init__(self, user, key, persist=False):
         self.user = user
         self.key = key
@@ -42,9 +43,10 @@ class ClipManager:
         self._stop = threading.Event()
         self._lock = threading.Lock()
         self._setup_pki()
+        clip_set("")  # limpa o clipboard no arranque
 
     def _setup_pki(self):
-        """Carrega/gera CA, certificado de assinatura e chave privada protegida."""
+# --- Gera ou carrega os certificados e chaves RSA. Se existentes carrega e decifra a private key, senão gera um nova Chave e um certificado ---
         d = self.hist.dir
         ca_key_p  = os.path.join(d, "ca_key.pem")
         ca_crt_p  = os.path.join(d, "ca_cert.pem")
@@ -64,6 +66,7 @@ class ClipManager:
                 pki.save_cert(self.user_cert, usr_crt_p)
 
     def _poll_loop(self):
+# --- Loop de captura de clipboard: a cada 2 segundos (pool_interval) verifica se há algo novo no clipboard, se houver cifra e adiciona ao histórico. A cada 10 segundos (save_interval) grava o histórico cifrado em disco. Usa locks para sincronização entre a thread de captura e a thread principal que pode solicitar flush ou verificar a assinatura. ---
         last_save = time.time()
         interval = self.cfg.get("save_interval")
         poll = self.cfg.get("poll_interval")
@@ -82,18 +85,21 @@ class ClipManager:
             self._stop.wait(poll)
 
     def flush(self):
+# --- Grava o histórico cifrado e assinado em disco. ---
         with self._lock:
             self.hist.save(self.key, self.priv)
 
     def start(self):
+# --- Inicia a thread de captura do clipboard. ---
         self.t = threading.Thread(target=self._poll_loop, daemon=True); self.t.start()
 
     def stop(self):
+# --- Sinaliza a thread de captura para parar e aguarda sua finalização. Se persistência estiver habilitada, força um flush final. ---
         self._stop.set()
         if self.persist:
             self.flush()
 
-    # verificacao de assinatura via certificado (cadeia de confianca)
+# --- verificacao de assinatura via certificado (cadeia de confianca) ---
     def verify(self) -> bool:
         if not os.path.exists(self.hist.sig_file):
             return False
@@ -114,7 +120,7 @@ class ClipManager:
             return False
 
 
-HELP = """CTRL+C — Gestor de Clipboard seguro. Comandos disponiveis:
+HELP = """CTRL+C — Gestor de Clipboard porreirinho. Comandos disponiveis:
 
   list             Lista as entradas do historico (indice, hora, prefixo do hash).
                    NAO decifra o conteudo — apenas metadados.
@@ -136,9 +142,8 @@ Notas de seguranca:
   - A chave privada RSA e guardada em disco cifrada (PKCS#8) com a chave derivada.
   - Com --master, a chave de cifra deriva da password mestra via PBKDF2 (600k iter)."""
 
-
+# --- É o ciclo que lê comandos do utilizador, executa-os ---
 def repl(mgr: ClipManager):
-    print(HELP)
     while True:
         try: cmd = input("ctrl+c> ").strip()
         except EOFError: break
