@@ -29,10 +29,12 @@ def ub64(s: str) -> bytes: return base64.b64decode(s)
 
 
 # ----------------------------- KEY MANAGEMENT --------------------------------
+# --- Gera uma chave aleatória (versão simples) ---
 def random_key() -> bytes:
     """Versão simples: chave aleatória só em memória."""
     return os.urandom(KEY_LEN)
 
+# --- Gera uma chave aleatória com uma password mestra e um sal para mais segurança (versão elaborada) ---
 def derive_key(master_password: str, salt: bytes) -> bytes:
     """Versão elaborada: PBKDF2 a partir de password mestra + pitada de sal."""
     kdf = PBKDF2HMAC(algorithm=hashes.SHA256(), length=KEY_LEN,
@@ -46,16 +48,17 @@ class Entry:
     """Uma entrada do clipboard, cifrada individualmente."""
     nonce: str            # b64
     ciphertext: str       # b64 (inclui tag GCM)
-    sha256: str           # hex — hash do texto-limpo (vai p/ ficheiro à parte)
+    sha256: str           # hex — hash do texto-limpo (vai para ficheiro à parte)
     ts: float
 
     @staticmethod
+# --- Cria uma nova entrada a partir do texto-limpo, cifrando-a e calculando o hash ---
     def create(plaintext: str, key: bytes) -> "Entry":
         nonce = os.urandom(12)
         ct = AESGCM(key).encrypt(nonce, plaintext.encode(), None)
         digest = hashlib.sha256(plaintext.encode()).hexdigest()
         return Entry(b64(nonce), b64(ct), digest, time.time())
-
+# --- Decifra a entrada usando a chave fornecida, retornando o texto-limpo ---
     def decrypt(self, key: bytes) -> str:
         pt = AESGCM(key).decrypt(ub64(self.nonce), ub64(self.ciphertext), None)
         return pt.decode()
@@ -72,16 +75,16 @@ class History:
         self.sig_file   = os.path.join(self.dir, "history.sig")
         self.entries: list[Entry] = []
 
-    # --- persistência ---
+# --- Salva o histórico ---
     def save(self, key: bytes, priv_key: rsa.RSAPrivateKey):
-        # apaga o anterior reescrevendo o ficheiro
+# --- apaga o anterior reescrevendo o ficheiro ---
         blob = json.dumps([asdict(e) for e in self.entries]).encode()
         with open(self.enc_file, "wb") as f:
             f.write(blob)
-        # hashes em texto limpo, ficheiro à parte
+# --- Hashes em texto limpo, ficheiro à parte ---
         with open(self.hash_file, "w") as f:
             f.write("\n".join(e.sha256 for e in self.entries))
-        # assinatura digital RSA-PSS do ficheiro cifrado
+# --- Assinatura digital RSA-PSS do ficheiro cifrado ---
         sig = priv_key.sign(
             blob,
             padding.PSS(mgf=padding.MGF1(hashes.SHA256()),
@@ -91,25 +94,26 @@ class History:
             f.write(sig)
 
     def load(self):
+# --- carrega o histórico, reconstruindo as entradas em memória (sem decifrar) ---
         if not os.path.exists(self.enc_file):
             return
         with open(self.enc_file, "rb") as f:
             data = json.loads(f.read().decode())
         self.entries = [Entry(**d) for d in data]
 
-    # --- requisito: existência via hash, SEM decifrar ---
+# --- Verifica se o histórico contém uma entrada com o hash especificado ---
     def contains(self, plaintext: str) -> bool:
         target = hashlib.sha256(plaintext.encode()).hexdigest()
-        # 1) entradas atuais em memória (não exige gravação prévia)
+# --- entradas atuais em memória (não exige gravação prévia)
         if any(e.sha256 == target for e in self.entries):
             return True
-        # 2) fallback: ficheiro de hashes em disco (históricos já gravados)
+# --- fallback: ficheiro de hashes em disco (históricos já gravados)
         if not os.path.exists(self.hash_file):
             return False
         with open(self.hash_file) as f:
             return target in {l.strip() for l in f if l.strip()}
 
-    # --- decifração seletiva (só uma entrada) ---
+# --- decifra uma entrada específica ---
     def decrypt_one(self, idx: int, key: bytes) -> str:
         return self.entries[idx].decrypt(key)
 
@@ -119,6 +123,7 @@ class History:
 
 # ----------------------------- SIGNATURE VERIFY ------------------------------
 def verify_signature(enc_file: str, sig_file: str, pub_key: rsa.RSAPublicKey) -> bool:
+# --- Verifica assinatura RSA-PSS do ficheiro cifrado usando a chave pública fornecida ---
     with open(enc_file, "rb") as f: blob = f.read()
     with open(sig_file, "rb") as f: sig  = f.read()
     try:
@@ -132,6 +137,7 @@ def verify_signature(enc_file: str, sig_file: str, pub_key: rsa.RSAPublicKey) ->
 
 
 def gen_rsa_keypair():
+# --- Gera um par de chaves RSA 2048 bits e devolve um par de chaves(privada, pública) ---
     priv = rsa.generate_private_key(public_exponent=65537, key_size=2048)
     return priv, priv.public_key()
 
