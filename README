@@ -6,14 +6,14 @@ digitais e suporte a certificados X.509.
 
 ## Ficheiros
 
-| Ficheiro | Papel |
-| -------- | ----- |
-| `T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_clipsec.py` | Núcleo cripto: AES-256-GCM por entrada, SHA-256, assinatura RSA-PSS, PBKDF2. |
-| `T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_pki.py` | Certificados X.509 (CA + cert de assinatura) e proteção da chave privada em disco. |
-| `T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_config.py` | Gestão e ferramenta de configuração (max_entries, intervalos, etc.). |
-| `T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_app.py` | Daemon de captura (thread, "CTRL+V" a cada 2 s; autosave 5 min) + CLI. |
-| `T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_gui.py` | Interface Tkinter; **duplo-clique** repõe a entrada no clipboard. |
-| `T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_attack.py` | Demonstração de uma falha da implementação + mitigação (para a apresentação). |
+| Ficheiro                                                    | Papel                                                                              |
+| :---------------------------------------------------------- | :--------------------------------------------------------------------------------- |
+| `T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_clipsec.py` | Núcleo cripto: AES-256-GCM por entrada, SHA-256, assinatura RSA-PSS, PBKDF2.       |
+| `T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_pki.py`     | Certificados X.509 (CA + cert de assinatura) e proteção da chave privada em disco. |
+| `T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_config.py`  | Gestão e ferramenta de configuração (max_entries, intervalos, etc.).               |
+| `T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_app.py`     | Daemon de captura (thread, "CTRL+V" a cada 2 s; autosave 5 min) + CLI.             |
+| `T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_gui.py`     | Interface Tkinter; **duplo-clique** repõe a entrada no clipboard.                  |
+| `T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_attack.py`  | Demonstração de uma falha da implementação + mitigação (para a apresentação).      |
 
 Sem `pyperclip` a app corre em modo _mock_ (útil para testes).
 
