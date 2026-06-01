@@ -25,7 +25,7 @@ def run_demo():
 # --- vítima usa o gestor normalmente ---
     key = random_key()
     h = History("vitima", "/tmp/attack_demo")
-    from clipsec import gen_rsa_keypair
+    from T10_Tiago_Bruno_Diogo_Henrique_Goncalo_Rodrigo_clipsec import gen_rsa_keypair
     priv, _ = gen_rsa_keypair()
     for s in ["bom dia", "Banco#2024!senha", "lista de compras"]:
         h.add(s, key)
